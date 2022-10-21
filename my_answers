@@ -1,0 +1,106 @@
+df_data
+-------
+(2000, 96)
+ID            int64
+EARNINGS    float64
+S             int64
+EXP         float64
+FEMALE        int64
+             ...
+MSA11NO       int64
+MSA11NCC      int64
+MSA11CC       int64
+MSA11NK       int64
+MSA11NIC      int64
+Length: 96, dtype: object
+
+Index(['ID', 'EARNINGS', 'S', 'EXP', 'FEMALE', 'MALE', 'BYEAR', 'AGE',
+       'AGEMBTH', 'HHINC97', 'POVRAT97', 'HHBMBF', 'HHBMOF', 'HHOMBF',
+       'HHBMONLY', 'HHBFONLY', 'HHOTHER', 'MSA97NO', 'MSA97NCC', 'MSA97CC',
+       'MSA97NK', 'ETHBLACK', 'ETHHISP', 'ETHWHITE', 'EDUCPROF', 'EDUCPHD',
+       'EDUCMAST', 'EDUCBA', 'EDUCAA', 'EDUCHSD', 'EDUCGED', 'EDUCDO',
+       'PRMONM', 'PRMONF', 'PRMSTYUN', 'PRMSTYPE', 'PRMSTYAN', 'PRMSTYAE',
+       'PRFSTYUN', 'PRFSTYPE', 'PRFSTYAN', 'PRFSTYAE', 'SINGLE', 'MARRIED',
+       'COHABIT', 'OTHSING', 'FAITHN', 'FAITHP', 'FAITHC', 'FAITHJ', 'FAITHO',
+       'FAITHM', 'ASVABAR', 'ASVABWK', 'ASVABPC', 'ASVABMK', 'ASVABNO',
+       'ASVABCS', 'ASVABC', 'ASVABC4', 'VERBAL', 'ASVABMV', 'HEIGHT',
+       'WEIGHT04', 'WEIGHT11', 'SF', 'SM', 'SFR', 'SMR', 'SIBLINGS', 'REG97NE',
+       'REG97NC', 'REG97S', 'REG97W', 'RS97RURL', 'RS97URBN', 'RS97UNKN',
+       'JOBS', 'HOURS', 'TENURE', 'CATGOV', 'CATPRI', 'CATNPO', 'CATMIS',
+       'CATSE', 'COLLBARG', 'URBAN', 'REGNE', 'REGNC', 'REGW', 'REGS',
+       'MSA11NO', 'MSA11NCC', 'MSA11CC', 'MSA11NK', 'MSA11NIC'],
+      dtype='object')
+
+Duplicate rows
+--------------
+        ID  EARNINGS   S   EXP  ...  MSA11NCC  MSA11CC  MSA11NK  MSA11NIC
+1868     1     27.47  16  8.52  ...         0        1        0         0
+969      1     27.47  16  8.52  ...         0        1        0         0
+1299    28     14.10  17  5.67  ...         0        1        0         0
+418     28     14.10  17  5.67  ...         0        1        0         0
+1114    31     42.00  16  7.50  ...         0        1        0         0
+...    ...       ...  ..   ...  ...       ...      ...      ...       ...
+1450  8947     25.48  18  7.88  ...         1        0        0         0
+1673  8956     10.82  13 10.15  ...         1        0        0         0
+1224  8956     10.82  13 10.15  ...         1        0        0         0
+1987  8980      5.25  11  8.73  ...         1        0        0         0
+754   8980      5.25  11  8.73  ...         1        0        0         0
+
+[977 rows x 96 columns]
+
+ids = df_data["ID"]
+print(df_data[ids.isin(ids[ids.duplicated()])].sort_values("ID"))
+
+
+NaN values
+----------
+print(df_data['EXP'].isnull().values.any())
+print(df_data['EARNINGS'].isnull().values.any())
+print(df_data['S'].isnull().values.any())
+
+False
+False
+False
+
+remove duplicates
+-----------------
+print(df_data.shape)
+df_data = df_data.drop_duplicates(subset=['ID'])
+print(df_data.shape)
+
+(2000, 96)
+(1487, 96)
+
+
+Split Training & Test Dataset
+-----------------------------
+nbr_rows_to_keep = int(len(df_data) / 5)
+df = df_data.head(nbr_rows_to_keep)
+df.to_csv('small_sample.csv')
+
+Simple Linear Regression
+------------------------
+Simple_Linear_Regression.py
+Simple_Linear_Regression.png
+
+print(regressor.intercept_) gives [0.92311384]
+print(regressor.coef_) gives [[1.42398354]]
+
+print(
+    f'after 1 year more of study a person is expected to earn ${round(float(calc(regressor.coef_, regressor.intercept_, 10) - calc(regressor.coef_, regressor.intercept_, 9)), 2)} more per hour')
+after 1 year more of study a person is expected to earn $1.42 more per hour
+
+Analyse the Estimated Values & Regression Residuals
+---------------------------------------------------
+Mean absolute error: 7.68
+Mean squared error: 108.64
+Root mean squared error: 10.42
+
+Multivariable Regression
+------------------------
+Multivariable_Regression.py
+
+after 16 years of study and 5 years of work, we predict to earn $44.78 per hour
+
+to further improve the regression to better predict earnings I would add HHINC97 household income, TENURE and others
+
